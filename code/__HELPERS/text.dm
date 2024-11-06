@@ -8,6 +8,42 @@
  *			Misc
  */
 
+GLOBAL_LIST_INIT(rus_unicode_conversion_hex,list(
+	"А" = "0410", "а" = "0430",
+	"Б" = "0411", "б" = "0431",
+	"В" = "0412", "в" = "0432",
+	"Г" = "0413", "г" = "0433",
+	"Д" = "0414", "д" = "0434",
+	"Е" = "0415", "е" = "0435",
+	"Ж" = "0416", "ж" = "0436",
+	"З" = "0417", "з" = "0437",
+	"И" = "0418", "и" = "0438",
+	"Й" = "0419", "й" = "0439",
+	"К" = "041a", "к" = "043a",
+	"Л" = "041b", "л" = "043b",
+	"М" = "041c", "м" = "043c",
+	"Н" = "041d", "н" = "043d",
+	"О" = "041e", "о" = "043e",
+	"П" = "041f", "п" = "043f",
+	"Р" = "0420", "р" = "0440",
+	"С" = "0421", "с" = "0441",
+	"Т" = "0422", "т" = "0442",
+	"У" = "0423", "у" = "0443",
+	"Ф" = "0424", "ф" = "0444",
+	"Х" = "0425", "х" = "0445",
+	"Ц" = "0426", "ц" = "0446",
+	"Ч" = "0427", "ч" = "0447",
+	"Ш" = "0428", "ш" = "0448",
+	"Щ" = "0429", "щ" = "0449",
+	"Ъ" = "042a", "ъ" = "044a",
+	"Ы" = "042b", "ы" = "044b",
+	"Ь" = "042c", "ь" = "044c",
+	"Э" = "042d", "э" = "044d",
+	"Ю" = "042e", "ю" = "044e",
+	"Я" = "042f", "я" = "044f",
+
+	"Ё" = "0401", "ё" = "0451"
+	))
 
 /*
  * SQL sanitization
@@ -87,7 +123,7 @@
 /proc/stripped_input(mob/user, message = "", title = "", default = "", max_length=MAX_MESSAGE_LEN, no_trim=FALSE)
 	var/name = input(user, message, title, default) as text|null
 	if(no_trim)
-		return copytext(html_encode(name), 1, max_length)
+		return copytext_char(html_encode(name), 1, max_length)
 	else
 		return trim(html_encode(name), max_length) //trim is "outside" because html_encode can expand single symbols into multiple symbols (such as turning < into &lt;)
 
@@ -99,79 +135,122 @@
 	else
 		return trim(html_encode(name), max_length)
 
-//Filters out undesirable characters from names
-/proc/reject_bad_name(t_in, allow_numbers=0, max_length=MAX_NAME_LEN)
-	if(!t_in || length(t_in) > max_length)
-		return //Rejects the input if it is null or if it is longer then the max length allowed
+#define NO_CHARS_DETECTED 0
+#define SPACES_DETECTED 1
+#define SYMBOLS_DETECTED 2
+#define NUMBERS_DETECTED 3
+#define LETTERS_DETECTED 4
 
-	var/number_of_alphanumeric	= 0
-	var/last_char_group			= 0
+/**
+ * Filters out undesirable characters from names.
+ *
+ * * strict - return null immidiately instead of filtering out
+ * * allow_numbers - allows numbers and common special characters - used for silicon/other weird things names
+ */
+/proc/reject_bad_name(t_in, allow_numbers = FALSE, max_length = MAX_NAME_LEN, ascii_only = FALSE, strict = FALSE)
+	if(!t_in)
+		return //Rejects the input if it is null
+
+	var/number_of_alphanumeric = 0
+	var/last_char_group = NO_CHARS_DETECTED
 	var/t_out = ""
+	var/t_len = length(t_in)
+	var/charcount = 0
+	var/char = ""
 
-	for(var/i=1, i<=length(t_in), i++)
-		var/ascii_char = text2ascii(t_in,i)
-		switch(ascii_char)
+	// This is a sanity short circuit, if the users name is three times the maximum allowable length of name
+	// We bail out on trying to process the name at all, as it could be a bug or malicious input and we dont
+	// Want to iterate all of it.
+	if(t_len > 3 * MAX_NAME_LEN)
+		return
+	for(var/i = 1, i <= t_len, i += length(char))
+		char = t_in[i]
+		switch(text2ascii(char))
 			// A  .. Z
 			if(65 to 90)			//Uppercase Letters
-				t_out += ascii2text(ascii_char)
 				number_of_alphanumeric++
-				last_char_group = 4
+				last_char_group = LETTERS_DETECTED
 
 			// a  .. z
 			if(97 to 122)			//Lowercase Letters
-				if(last_char_group<2)
-					t_out += ascii2text(ascii_char-32)	//Force uppercase first character
-				else
-					t_out += ascii2text(ascii_char)
+				if(last_char_group == NO_CHARS_DETECTED || last_char_group == SPACES_DETECTED || last_char_group == SYMBOLS_DETECTED) //start of a word
+					char = uppertext(char)
 				number_of_alphanumeric++
-				last_char_group = 4
+				last_char_group = LETTERS_DETECTED
+
+			if(1040 to 1071)			//Русские буковки
+				number_of_alphanumeric++
+				last_char_group = LETTERS_DETECTED
+
+			if(1072 to 1105)			//Русские буковки
+				if(last_char_group == NO_CHARS_DETECTED || last_char_group == SPACES_DETECTED || last_char_group == SYMBOLS_DETECTED) //start of a word
+					char = uppertext(char)
+				number_of_alphanumeric++
+				last_char_group = LETTERS_DETECTED
 
 			// 0  .. 9
 			if(48 to 57)			//Numbers
-				if(!last_char_group)
-					continue	//suppress at start of string
-				if(!allow_numbers)
+				if(last_char_group == NO_CHARS_DETECTED || !allow_numbers) //suppress at start of string
+					if(strict)
+						return
 					continue
-				t_out += ascii2text(ascii_char)
 				number_of_alphanumeric++
-				last_char_group = 3
+				last_char_group = NUMBERS_DETECTED
 
 			// '  -  .
 			if(39,45,46)			//Common name punctuation
-				if(!last_char_group)
+				if(last_char_group == NO_CHARS_DETECTED)
+					if(strict)
+						return
 					continue
-				t_out += ascii2text(ascii_char)
-				last_char_group = 2
+				last_char_group = SYMBOLS_DETECTED
 
 			// ~   |   @  :  #  $  %  &  *  +
 			if(126,124,64,58,35,36,37,38,42,43)			//Other symbols that we'll allow (mainly for AI)
-				if(!last_char_group)
-					continue	//suppress at start of string
-				if(!allow_numbers)
+				if(last_char_group == NO_CHARS_DETECTED || !allow_numbers) //suppress at start of string
+					if(strict)
+						return
 					continue
-				t_out += ascii2text(ascii_char)
-				last_char_group = 2
+				last_char_group = SYMBOLS_DETECTED
 
 			//Space
 			if(32)
-				if(last_char_group <= 1)
-					continue	//suppress double-spaces and spaces at start of string
-				t_out += ascii2text(ascii_char)
-				last_char_group = 1
+				if(last_char_group == NO_CHARS_DETECTED || last_char_group == SPACES_DETECTED) //suppress double-spaces and spaces at start of string
+					if(strict)
+						return
+					continue
+				last_char_group = SPACES_DETECTED
+
+			if(127 to INFINITY)
+				if(ascii_only)
+					if(strict)
+						return
+					continue
+				last_char_group = SYMBOLS_DETECTED //for now, we'll treat all non-ascii characters like symbols even though most are letters
+
 			else
-				return
+				continue
+		t_out += char
+		charcount++
+		if(charcount >= max_length)
+			break
 
 	if(number_of_alphanumeric < 2)
 		return		//protects against tiny names like "A" and also names like "' ' ' ' ' ' ' '"
 
-	if(last_char_group == 1)
-		t_out = copytext(t_out,1,length(t_out))	//removes the last character (in this case a space)
+	if(last_char_group == SPACES_DETECTED)
+		t_out = copytext_char(t_out, 1, -1) //removes the last character (in this case a space)
 
-	for(var/bad_name in list("space","floor","wall","r-wall","monkey","unknown","inactive ai"))	//prevents these common metagamey names
+	for(var/bad_name in list("space","floor","wall","r-wall","monkey","неизвестный","inactive ai"))	//prevents these common metagamey names
 		if(cmptext(t_out,bad_name))
 			return	//(not case sensitive)
 
 	return t_out
+
+#undef NO_CHARS_DETECTED
+#undef SPACES_DETECTED
+#undef NUMBERS_DETECTED
+#undef LETTERS_DETECTED
 
 //html_encode helper proc that returns the smallest non null of two numbers
 //or 0 if they're both null (needed because of findtext returning 0 when a value is not present)
@@ -262,15 +341,37 @@
 
 	return ""
 
+//Returns a string with reserved characters and spaces after the first and last letters removed
+//Like trim(), but very slightly faster. worth it for niche usecases
+/proc/trim_reduced(text)
+	var/starting_coord = 1
+	var/text_len = length(text)
+	for (var/i in 1 to text_len)
+		if (text2ascii(text, i) > 32)
+			starting_coord = i
+			break
+
+	for (var/i = text_len, i >= starting_coord, i--)
+		if (text2ascii(text, i) > 32)
+			return copytext(text, starting_coord, i + 1)
+
+	if(starting_coord > 1)
+		return copytext(text, starting_coord)
+	return ""
+
 //Returns a string with reserved characters and spaces before the first word and after the last word removed.
 /proc/trim(text, max_length)
 	if(max_length)
-		text = copytext(text, 1, max_length)
-	return trim_left(trim_right(text))
+		text = copytext_char(text, 1, max_length)
+	return trim_reduced(text)
 
-//Returns a string with the first element of the string capitalized.
-/proc/capitalize(t as text)
-	return uppertext(copytext(t, 1, 2)) + copytext(t, 2)
+/proc/capitalize(t)
+	. = t
+	if(isatom(t))
+		var/atom/A = t
+		t = A.name
+	. = copytext_char(t, 1, 2)
+	return uppertext(.) + copytext_char(t, 2)
 
 //Centers text by adding spaces to either side of the string.
 /proc/dd_centertext(message, length)
@@ -339,6 +440,7 @@
 GLOBAL_LIST_INIT(zero_character_only, list("0"))
 GLOBAL_LIST_INIT(hex_characters, list("0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"))
 GLOBAL_LIST_INIT(alphabet, list("a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"))
+GLOBAL_LIST_INIT(ru_alphabet, list("а","б","в","г","д","е","ё","ж","з","и","й","к","л","м","н","о","п","р","с","т","у","ф","х","ц","ч","ш","щ","ъ","ы","ь","э","ю","я"))
 GLOBAL_LIST_INIT(binary, list("0","1"))
 /proc/random_string(length, list/characters)
 	. = ""
@@ -587,6 +689,21 @@ GLOBAL_LIST_INIT(binary, list("0","1"))
 		result += ascii2text(ca)
 	return jointext(result, "")
 
+/proc/r_json_decode(text) //now I'm stupid
+	for(var/s in GLOB.rus_unicode_conversion_hex)
+		text = replacetext(text, "\\u[GLOB.rus_unicode_conversion_hex[s]]", s)
+	return json_decode(text)
+
+/**
+ * Removes any null entries from the list
+ * Returns TRUE if the list had nulls, FALSE otherwise
+**/
+/proc/list_clear_nulls(list/L)
+	var/start_len = L.len
+	var/list/N = new(start_len)
+	L -= N
+	return L.len < start_len
+
 //Takes a list of values, sanitizes it down for readability and character count,
 //then exports it as a json file at data/npc_saves/[filename].json.
 //As far as SS13 is concerned this is write only data. You can't change something
@@ -597,7 +714,8 @@ GLOBAL_LIST_INIT(binary, list("0","1"))
 		return
 
 	//Regular expressions are, as usual, absolute magic
-	var/regex/all_invalid_symbols = new("\[^ -~]+")
+	//Any characters outside of 32 (space) to 126 (~) because treating things you don't understand as "magic" is really stupid
+	var/regex/all_invalid_symbols = new(@"[^ -~]{1}")
 
 	var/list/accepted = list()
 	for(var/string in proposed)
@@ -605,34 +723,44 @@ GLOBAL_LIST_INIT(binary, list("0","1"))
 			continue
 		var/buffer = ""
 		var/early_culling = TRUE
-		for(var/pos = 1, pos <= length(string), pos++)
-			var/let = copytext(string, pos, (pos + 1) % length(string))
-			if(early_culling && !findtext(let,GLOB.is_alphanumeric))
+		var/lentext = length(string)
+		var/let = ""
+
+		for(var/pos = 1, pos <= lentext, pos += length(let))
+			let = string[pos]
+			if(!findtext(let, GLOB.is_alphanumeric))
 				continue
 			early_culling = FALSE
-			buffer += let
-		if(!findtext(buffer,GLOB.is_alphanumeric))
+			buffer = copytext(string, pos)
+			break
+		if(early_culling) //Never found any letters! Bail!
 			continue
+
 		var/punctbuffer = ""
-		var/cutoff = length(buffer)
-		for(var/pos = length(buffer), pos >= 0, pos--)
-			var/let = copytext(buffer, pos, (pos + 1) % length(buffer))
-			if(findtext(let,GLOB.is_alphanumeric))
+		var/cutoff = 0
+		lentext = length_char(buffer)
+		for(var/pos = 1, pos <= lentext, pos++)
+			let = copytext_char(buffer, -pos, -pos + 1)
+			if(!findtext(let, GLOB.is_punctuation)) //This won't handle things like Nyaaaa!~ but that's fine
 				break
-			if(findtext(let,GLOB.is_punctuation))
-				punctbuffer = let + punctbuffer //Note this isn't the same thing as using +=
-				cutoff = pos
+			punctbuffer += let
+			cutoff += length(let)
 		if(punctbuffer) //We clip down excessive punctuation to get the letter count lower and reduce repeats. It's not perfect but it helps.
 			var/exclaim = FALSE
 			var/question = FALSE
 			var/periods = 0
-			for(var/pos = length(punctbuffer), pos >= 0, pos--)
-				var/punct = copytext(punctbuffer, pos, (pos + 1) % length(punctbuffer))
-				if(!exclaim && findtext(punct,"!"))
+			lentext = length(punctbuffer)
+			for(var/pos = 1, pos <= lentext, pos += length(let))
+				let = punctbuffer[pos]
+				if(!exclaim && findtext(let, "!"))
 					exclaim = TRUE
-				if(!question && findtext(punct,"?"))
+					if(question)
+						break
+				if(!question && findtext(let, "?"))
 					question = TRUE
-				if(!exclaim && !question && findtext(punct,"."))
+					if(exclaim)
+						break
+				if(!exclaim && !question && findtext(let, ".")) //? and ! take priority over periods
 					periods += 1
 			if(exclaim)
 				if(question)
@@ -641,15 +769,13 @@ GLOBAL_LIST_INIT(binary, list("0","1"))
 					punctbuffer = "!"
 			else if(question)
 				punctbuffer = "?"
-			else if(periods)
-				if(periods > 1)
-					punctbuffer = "..."
-				else
-					punctbuffer = "" //Grammer nazis be damned
-			buffer = copytext(buffer, 1, cutoff) + punctbuffer
-		if(!findtext(buffer,GLOB.is_alphanumeric))
-			continue
-		if(!buffer || length(buffer) > 280 || length(buffer) <= cullshort || buffer in accepted)
+			else if(periods > 1)
+				punctbuffer = "..."
+			else
+				punctbuffer = "" //Grammer nazis be damned
+			buffer = copytext(buffer, 1, -cutoff) + punctbuffer
+		lentext = length_char(buffer)
+		if(!buffer || lentext > 280 || lentext <= cullshort || (buffer in accepted))
 			continue
 
 		accepted += buffer
@@ -658,9 +784,9 @@ GLOBAL_LIST_INIT(binary, list("0","1"))
 	var/list/oldjson = list()
 	var/list/oldentries = list()
 	if(fexists(log))
-		oldjson = json_decode(file2text(log))
+		oldjson = r_json_decode(file2text(log))
 		oldentries = oldjson["data"]
-	if(!isemptylist(oldentries))
+	if(length(oldentries))
 		for(var/string in accepted)
 			for(var/old in oldentries)
 				if(string == old)
@@ -669,8 +795,8 @@ GLOBAL_LIST_INIT(binary, list("0","1"))
 
 	var/list/finalized = list()
 	finalized = accepted.Copy() + oldentries.Copy() //we keep old and unreferenced phrases near the bottom for culling
-	listclearnulls(finalized)
-	if(!isemptylist(finalized) && length(finalized) > storemax)
+	list_clear_nulls(finalized)
+	if(length(finalized) > storemax)
 		finalized.Cut(storemax + 1)
 	fdel(log)
 
@@ -771,25 +897,20 @@ GLOBAL_LIST_INIT(binary, list("0","1"))
 	return uppertext(pick(GLOB.alphabet))
 
 /proc/unintelligize(message)
-	var/prefix=copytext(message,1,2)
+	var/regex/word_boundaries = regex(@"\b[\S]+\b", "g")
+	var/prefix = message[1]
 	if(prefix == ";")
-		message = copytext(message,2)
-	else if(prefix in list(":","#"))
-		prefix += copytext(message,2,3)
-		message = copytext(message,3)
+		message = copytext_char(message, 1 + length_char(prefix))
+	else if(prefix in list(":", "#"))
+		prefix += message[1 + length_char(prefix)]
+		message = copytext_char(message, length_char(prefix))
 	else
-		prefix=""
+		prefix = ""
 
-	var/list/words = splittext(message," ")
 	var/list/rearranged = list()
-	for(var/i=1;i<=words.len;i++)
-		var/cword = pick(words)
-		words.Remove(cword)
-		var/suffix = copytext(cword,length(cword)-1,length(cword))
-		while(length(cword)>0 && suffix in list(".",",",";","!",":","?"))
-			cword  = copytext(cword,1              ,length(cword)-1)
-			suffix = copytext(cword,length(cword)-1,length(cword)  )
-		if(length(cword))
+	while(word_boundaries.Find(message))
+		var/cword = word_boundaries.match
+		if(length_char(cword))
 			rearranged += cword
-	message = "[prefix][jointext(rearranged," ")]"
-	. = message
+	shuffle_inplace(rearranged)
+	return "[prefix][jointext(rearranged, " ")]"
