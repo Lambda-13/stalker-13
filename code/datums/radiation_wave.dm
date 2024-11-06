@@ -87,7 +87,7 @@
 			intensity *= (1-((1-thing.rad_insulation)/width))
 
 /datum/radiation_wave/proc/radiate(list/atoms, strength)
-	var/contamination_chance = (strength-RAD_MINIMUM_CONTAMINATION) * RAD_CONTAMINATION_CHANCE_COEFFICIENT * min(1, 1/(steps*range_modifier))
+	var/contamination_chance = (strength-RAD_MINIMUM_CONTAMINATION) * 0.01 * min(1, 1/(steps*range_modifier))
 	for(var/k in 1 to atoms.len)
 		var/atom/thing = atoms[k]
 		if(!thing)

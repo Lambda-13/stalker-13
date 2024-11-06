@@ -1321,7 +1321,7 @@
 		if(vol && S)
 			sound_icon.alpha = sound_icon.alpha * (vol / 100)
 		client.images += sound_icon
-		addtimer(CALLBACK(src, .proc/remove_image, sound_icon), 7)
+		addtimer(CALLBACK(src, PROC_REF(remove_image), sound_icon), 7)
 
 /mob/living/proc/remove_image(sound_image)
 	if(sound_image && client)

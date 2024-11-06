@@ -143,7 +143,7 @@ GLOBAL_LIST_EMPTY(anomalies)
 		return
 
 	if(lasttime + (cooldown * 10) > world.time)
-		addtimer(CALLBACK(src, .proc/Think), (lasttime + (cooldown * 10) - world.time))
+		addtimer(CALLBACK(src, PROC_REF(Think)), (lasttime + (cooldown * 10) - world.time))
 		return
 
 	incooldown = 1
