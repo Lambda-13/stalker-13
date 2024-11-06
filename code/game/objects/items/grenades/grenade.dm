@@ -77,7 +77,7 @@
 	playsound(src, pick('stalker/sound/weapons/grenade/grenadepull1.ogg','stalker/sound/weapons/grenade/grenadepull2.ogg','stalker/sound/weapons/grenade/grenadepull3.ogg'), volume, 1)
 	active = TRUE
 	icon_state = initial(icon_state) + "_active"
-	addtimer(CALLBACK(src, PROC_REF(prime)), isnull(delayoverride)? det_time : delayoverride)
+	addtimer(CALLBACK(src, .proc/prime), isnull(delayoverride)? det_time : delayoverride)
 
 /obj/item/grenade/proc/prime()
 

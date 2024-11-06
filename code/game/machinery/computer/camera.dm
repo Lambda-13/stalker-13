@@ -121,7 +121,7 @@
 			user.clear_fullscreen("flash", 5)
 		watchers[user] = C
 		use_power(50)
-		addtimer(CALLBACK(src, PROC_REF(use_camera_console), user), 5)
+		addtimer(CALLBACK(src, .proc/use_camera_console, user), 5)
 	else
 		user.unset_machine()
 
@@ -227,7 +227,7 @@
 
 /obj/machinery/computer/security/telescreen/entertainment/Initialize()
 	. = ..()
-	AddComponent(/datum/component/redirect, list(COMSIG_CLICK = CALLBACK(src, PROC_REF(BigClick))))
+	AddComponent(/datum/component/redirect, list(COMSIG_CLICK = CALLBACK(src, .proc/BigClick)))
 
 // Bypass clickchain to allow humans to use the telescreen from a distance
 /obj/machinery/computer/security/telescreen/entertainment/proc/BigClick()

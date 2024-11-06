@@ -12,7 +12,7 @@
 
 /obj/machinery/washing_machine/ComponentInitialize()
 	. = ..()
-	AddComponent(/datum/component/redirect, list(COMSIG_COMPONENT_CLEAN_ACT = CALLBACK(src, PROC_REF(clean_blood))))
+	AddComponent(/datum/component/redirect, list(COMSIG_COMPONENT_CLEAN_ACT = CALLBACK(src, .proc/clean_blood)))
 
 /obj/machinery/washing_machine/examine(mob/user)
 	..()
@@ -35,7 +35,7 @@
 
 	busy = TRUE
 	update_icon()
-	addtimer(CALLBACK(src, PROC_REF(wash_cycle)), 200)
+	addtimer(CALLBACK(src, .proc/wash_cycle), 200)
 
 	START_PROCESSING(SSfastprocess, src)
 

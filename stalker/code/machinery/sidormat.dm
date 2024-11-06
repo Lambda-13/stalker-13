@@ -539,7 +539,7 @@ GLOBAL_LIST_INIT(global_sidormat_list, list(
 	src.amount = initial_stock
 	src.restock_amount = initial_stock/4
 	src.restock_time = rand(min_restock_time, max_restock_time)
-	addtimer(CALLBACK(src, PROC_REF(Restock)), src.restock_time)
+	addtimer(CALLBACK(src, .proc/Restock), src.restock_time)
 	if(sale_price)
 		src.sale_price = sale_price
 	else
@@ -584,7 +584,7 @@ GLOBAL_LIST_INIT(global_sidormat_list, list(
 		amount += initial_stock
 	else
 		amount += restock_amount
-	addtimer(CALLBACK(src, PROC_REF(Restock)), restock_time)
+	addtimer(CALLBACK(src, .proc/Restock), restock_time)
 	return
 
 /datum/data/stalker_equipment/stalker_pda/GetCost(var/obj/item/stalker_pda/KPK)

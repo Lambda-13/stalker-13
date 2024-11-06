@@ -2,7 +2,7 @@
 	var/mob/living/carbon/snail
 
 /datum/component/snailcrawl/Initialize()
-	RegisterSignal(parent, list(COMSIG_MOVABLE_MOVED), PROC_REF(lubricate))
+	RegisterSignal(parent, list(COMSIG_MOVABLE_MOVED), .proc/lubricate)
 	snail = parent
 
 /datum/component/snailcrawl/proc/lubricate()
