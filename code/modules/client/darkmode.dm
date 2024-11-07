@@ -53,6 +53,13 @@ Thanks to spacemaniac and mcdonald for help with the JS side of this.
 	winset(src, "info", "tab-text-color = [COLOR_DARKMODE_TEXT];tab-text-color = #000000")
 	winset(src, "info", "prefix-color = [COLOR_DARKMODE_TEXT];prefix-color = #000000")
 	winset(src, "info", "suffix-color = [COLOR_DARKMODE_TEXT];suffix-color = #000000")
+	winset(src, "stat", "background-color = [COLOR_DARKMODE_DARKBACKGROUND];background-color = #FFFFFF")
+	winset(src, "stat", "tab-background-color = [COLOR_DARKMODE_BACKGROUND];tab-background-color = none")
+	winset(src, "stat", "text-color = [COLOR_DARKMODE_TEXT];text-color = #000000")
+	winset(src, "stat", "tab-text-color = [COLOR_DARKMODE_TEXT];tab-text-color = #000000")
+	winset(src, "stat", "prefix-color = [COLOR_DARKMODE_TEXT];prefix-color = #000000")
+	winset(src, "stat", "suffix-color = [COLOR_DARKMODE_TEXT];suffix-color = #000000")
+
 	//Say, OOC, me Buttons etc.
 	winset(src, "saybutton", "background-color = [COLOR_DARKMODE_BACKGROUND];background-color = none")
 	winset(src, "saybutton", "text-color = [COLOR_DARKMODE_TEXT];text-color = #000000")
@@ -108,6 +115,13 @@ Thanks to spacemaniac and mcdonald for help with the JS side of this.
 	winset(src, "info", "tab-text-color = #000000;tab-text-color = [COLOR_DARKMODE_TEXT]")
 	winset(src, "info", "prefix-color = #000000;prefix-color = [COLOR_DARKMODE_TEXT]")
 	winset(src, "info", "suffix-color = #000000;suffix-color = [COLOR_DARKMODE_TEXT]")
+	winset(src, "stat", "background-color = #FFFFFF;background-color = [COLOR_DARKMODE_DARKBACKGROUND]")
+	winset(src, "stat", "tab-background-color = none;tab-background-color = [COLOR_DARKMODE_BACKGROUND]")
+	winset(src, "stat", "text-color = #000000;text-color = [COLOR_DARKMODE_TEXT]")
+	winset(src, "stat", "tab-text-color = #000000;tab-text-color = [COLOR_DARKMODE_TEXT]")
+	winset(src, "stat", "prefix-color = #000000;prefix-color = [COLOR_DARKMODE_TEXT]")
+	winset(src, "stat", "suffix-color = #000000;suffix-color = [COLOR_DARKMODE_TEXT]")
+
 	//Say, OOC, me Buttons etc.
 	winset(src, "saybutton", "background-color = none;background-color = #494949")
 	winset(src, "saybutton", "text-color = #000000;text-color = [COLOR_DARKMODE_TEXT]")
