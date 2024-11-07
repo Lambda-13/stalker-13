@@ -59,7 +59,7 @@ GLOBAL_LIST_INIT(InterfaceThemes, list(\
 
 	//outputwindow
 	winset(src, "outputwindow.output", "text-color = [theme.ChatForeColor]; background-color = [theme.ChatColor]")
-
+/*
 /client/verb/switch_interface_theme()
 	set name = "Change interface Theme"
 	set category = "OOC"
@@ -69,3 +69,4 @@ GLOBAL_LIST_INIT(InterfaceThemes, list(\
 	if(istype(_theme))
 		change_theme(_theme)
 		return _theme
+*/
