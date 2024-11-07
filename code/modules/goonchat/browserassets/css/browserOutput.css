@@ -265,28 +265,28 @@ em						{font-style: normal;	font-weight: bold;}
 
 .ooc					{					font-weight: bold;}
 .adminobserverooc		{color: #0099cc;	font-weight: bold;}
-.adminooc				{color: #700038;	font-weight: bold;}
+.adminooc				{color: #b82e00;	font-weight: bold;}
 
-.adminsay   			{color: #FF4500;	font-weight: bold;}
-.admin					{color: #386aff;	font-weight: bold;}
+.adminsay   			{color: #960018;	font-weight: bold;}
+.admin					{color: #b82e00;	font-weight: bold;}
 
 .name					{					font-weight: bold;}
 
 .say					{}
-.deadsay				{color: #5c00e6;}
+.deadsay				{color: #e2c1ff;}
 .binarysay    			{color: #20c20e; background-color: #000000; display: block;}
 .binarysay a  			{color: #00ff00;}
 .binarysay a:active, .binarysay a:visited {color: #88ff88;}
-.radio					{color: #008000;}
+.radio					{color: #1ecc43;}
 .sciradio				{color: #993399;}
-.comradio				{color: #948f02;}
-.secradio				{color: #a30000;}
+.comradio				{color: #193a7a;}
+.secradio				{color: #b41c1c;}
 .medradio				{color: #337296;}
-.engradio				{color: #fb5613;}
+.engradio				{color: #a66300;}
 .suppradio				{color: #a8732b;}
 .servradio				{color: #6eaa2c;}
 .syndradio				{color: #6d3f40;}
-.centcomradio			{color: #686868;}
+.centcomradio			{color: #5c5c8a;}
 .aiprivradio			{color: #ff00ff;}
 .redteamradio           {color: #ff0000;}
 .blueteamradio          {color: #0000ff;}
@@ -321,7 +321,7 @@ h1.alert, h2.alert		{color: #000000;}
 .green					{color: #03ff39;}
 .nicegreen					{color: #14a833;}
 .shadowling				{color: #3b2769;}
-.cult					{color: #960000;}
+.cult					{color: #aa1c1c;}
 
 .cultitalic				{color: #960000;	font-style: italic;}
 .cultbold				{color: #960000; font-style: italic; font-weight: bold;}
@@ -371,19 +371,19 @@ h1.alert, h2.alert		{color: #000000;}
 .neovgre				{color: #6E001A; font-weight: bold; font-style: italic;}
 .neovgre_small			{color: #6E001A;}
 
-.newscaster				{color: #800000;}
+.newscaster				{color: #750000;}
 .ghostalert				{color: #5c00e6;	font-style: italic; font-weight: bold;}
 
-.alien					{color: #543354;}
+.alien					{color: #855d85;}
 .noticealien			{color: #00c000;}
 .alertalien				{color: #00c000;	font-weight: bold;}
-.changeling				{color: #800080;	font-style: italic;}
+.changeling				{color: #059223;	font-style: italic;}
 .assimilator			{color: #800080;	font-size: 16px ; font-weight: bold;}
 .bigassimilator			{color: #800080;	font-size: 32px ; font-weight: bold;}
 
 .spider					{color: #4d004d;}
 
-.interface				{color: #330033;}
+.interface				{color: #750e75;}
 
 .sans					{font-family: "Comic Sans MS", cursive, sans-serif;}
 .papyrus				{font-family: "Papyrus", cursive, sans-serif;}
