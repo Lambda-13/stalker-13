@@ -454,6 +454,19 @@ function toHex(n) {
 	return "0123456789ABCDEF".charAt((n-n%16)/16) + "0123456789ABCDEF".charAt(n%16);
 }
 
+function setTheme(theme) {
+	if (theme === 'white') {
+		document.getElementById("sheetofstyles").href = "browserOutput_white.css";
+		runByond('?_src_=chat&proc=swaptolightmode');
+	} else if (theme === 'dark') {
+		document.getElementById("sheetofstyles").href = "browserOutput.css";
+		runByond('?_src_=chat&proc=swaptodarkmode');
+	}
+
+	setCookie('theme', theme, 365);
+	internalOutput('<span class="internal boldnshit">Set theme: '+theme+'</span>', 'internal');
+}
+
 function handleClientData(ckey, ip, compid) {
 	//byond sends player info to here
 	var currentData = {'ckey': ckey, 'ip': ip, 'compid': compid};
@@ -670,6 +683,7 @@ $(function() {
 		'shighlightColor': getCookie('highlightcolor'),
 		'smusicVolume': getCookie('musicVolume'),
 		'smessagecombining': getCookie('messagecombining'),
+		'stheme': getCookie('theme'),
 	};
 
 	if (savedConfig.sfontSize) {
@@ -679,6 +693,9 @@ $(function() {
 	if (savedConfig.slineHeight) {
 		$("body").css('line-height', savedConfig.slineHeight);
 		internalOutput('<span class="internal boldnshit">Loaded line height setting of: '+savedConfig.slineHeight+'</span>', 'internal');
+	}
+	if(savedConfig.stheme){
+		setTheme(savedConfig.stheme);
 	}
 	if (savedConfig.spingDisabled) {
 		if (savedConfig.spingDisabled == 'true') {
