@@ -47,13 +47,6 @@ GLOBAL_LIST_INIT(InterfaceThemes, list(\
 	winset(src, "rpane", "background-color = [theme.BackgroundColor]")
 	winset(src, "rpane.rpanewindow", "background-color = [theme.BackgroundColor]")
 		//buttons
-	winset(src, "rpane.github", "text-color = [theme.ForegroundColor]; background-color = [theme.BackgroundColor]")
-	winset(src, "rpane.BugReport", "text-color = [theme.ForegroundColor]; background-color = [theme.BackgroundColor]")
-	winset(src, "rpane.rulesb", "text-color = [theme.ForegroundColor]; background-color = [theme.BackgroundColor]")
-	winset(src, "rpane.changelog", "text-color = [theme.ForegroundColor]; background-color = [theme.BackgroundColor]")
-	winset(src, "rpane.changelog_infinity", "text-color = [theme.ForegroundColor]; background-color = [theme.BackgroundColor]")
-	winset(src, "rpane.forumb", "text-color = [theme.ForegroundColor]; background-color = [theme.BackgroundColor]")
-	winset(src, "rpane.wikib", "text-color = [theme.ForegroundColor]; background-color = [theme.BackgroundColor]")
 	winset(src, "rpane.textb", "text-color = [theme.ForegroundColor]; background-color = [theme.BackgroundColor]")
 	winset(src, "rpane.infob", "text-color = [theme.ForegroundColor]; background-color = [theme.BackgroundColor]")
 
