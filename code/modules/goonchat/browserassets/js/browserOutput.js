@@ -22,7 +22,7 @@ window.onerror = function(msg, url, line, col, error) {
 
 //Globals
 window.status = 'Output';
-var $messages, $subOptions, $subAudio, $selectedSub, $contextMenu, $filterMessages, $last_message;
+var $messages, $subTheme, $subOptions, $subAudio, $selectedSub, $contextMenu, $filterMessages, $last_message;
 var opts = {
 	//General
 	'messageCount': 0, //A count...of messages...
@@ -651,6 +651,7 @@ if (typeof $ === 'undefined') {
 
 $(function() {
 	$messages = $('#messages');
+	$subTheme = $('#subTheme');
 	$subOptions = $('#subOptions');
 	$subAudio = $('#subAudio');
 	$selectedSub = $subOptions;
@@ -910,6 +911,10 @@ $(function() {
 		handleToggleClick($subOptions, $(this));
 	});
 
+	$('#toggleTheme').click(function(e) {
+		handleToggleClick($subTheme, $(this));
+	});
+
 	$('#toggleAudio').click(function(e) {
 		handleToggleClick($subAudio, $(this));
 	});
@@ -921,6 +926,16 @@ $(function() {
 	$('.sub, .toggle').mouseleave(function() {
 		opts.suppressSubClose = false;
 	});
+
+	$('#setWhiteTheme').click(function() {
+		setTheme('white');
+		savedConfig.stheme = 'white';
+	})
+
+	$('#setDarkTheme').click(function() {
+		setTheme('dark');
+		savedConfig.stheme = 'dark';
+	})
 
 	$('#decreaseFont').click(function(e) {
 		var fontSize = parseInt($messages.css('font-size'));
