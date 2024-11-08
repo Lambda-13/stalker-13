@@ -141,6 +141,7 @@ GLOBAL_VAR_INIT(global_lentahtml, "")
 
 	//user.set_machine(src)
 	mainhtml ="<html> \
+	<meta charset=\"utf-8\"> \
 	\
 	<style>\
 	a:link {color: #607D8B;}\
